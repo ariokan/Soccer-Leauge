@@ -1,7 +1,6 @@
 package com.example.soccerleauge;
 
 import android.content.Context;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +11,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import retrofit2.Callback;
+
+
 public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder> {
 
     List<Team> teamList;
     Context context;
+  private ItemClickListener mOnClickListener;
 
-    public TeamAdapter(Context context, List<Team> teams){
+
+    public TeamAdapter(Context context, List<Team> teams, ItemClickListener OnClickListener){
         this.context=context;
         teamList = teams;
+        this.mOnClickListener = OnClickListener;
     }
 
     @NonNull
     @Override
     public TeamViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_team, parent,false);
-        return  new TeamViewHolder(view);
+        return  new TeamViewHolder(view, mOnClickListener);
     }
 
     @Override
@@ -42,12 +47,26 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
         return teamList.size();
     }
 
-    public class TeamViewHolder extends RecyclerView.ViewHolder {
+    public class TeamViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView rank, name;
-        public TeamViewHolder(@NonNull View itemView) {
+        ItemClickListener itemClickListener;
+        public TeamViewHolder(@NonNull View itemView,ItemClickListener itemClickListener) {
             super(itemView);
             rank = itemView.findViewById(R.id.rank);
             name =itemView.findViewById(R.id.name);
+            this.itemClickListener= itemClickListener;
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+
+            mOnClickListener.onItemClick(getAbsoluteAdapterPosition());
+        }
+    }
+
+    interface ItemClickListener{
+
+        void onItemClick(int position);
     }
 }

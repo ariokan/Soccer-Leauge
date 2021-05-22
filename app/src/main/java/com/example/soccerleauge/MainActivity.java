@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.util.List;
@@ -16,9 +15,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemClickListener {
 
     private RecyclerView recyclerView;
+    public  List<Team> teamList;
+    public TeamAdapter teamAdapter;
 
 
     @Override
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         Api api =retrofit.create(Api.class);
 
+
         Call<List<Team>> call = api.getTeams();
 
         call.enqueue(new Callback<List<Team>>() {
@@ -45,10 +47,9 @@ public class MainActivity extends AppCompatActivity {
                 if(!response.isSuccessful()) {
                     return;
                 }
-                List<Team> teamList =response.body();
+                 teamList =response.body();
                 Toast.makeText(getApplicationContext(),response.body().toString(),Toast.LENGTH_LONG).show();
-                TeamAdapter teamAdapter = new TeamAdapter(getApplicationContext(),teamList);
-                recyclerView.setAdapter(teamAdapter);
+
             }
 
             @Override
@@ -56,5 +57,12 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+        teamAdapter = new TeamAdapter(getApplicationContext(),teamList, this);
+        recyclerView.setAdapter(teamAdapter);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Toast.makeText(getApplicationContext(), teamList.get(position).getName().toString(),Toast.LENGTH_SHORT).show();
     }
 }
