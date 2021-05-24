@@ -38,11 +38,14 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
     private Switch themeSwitch;
 
 
+    //TODO: refactor onCreate use simple functions
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+       //TODO: find better way to solve it
         themeSwitch = (Switch) findViewById(R.id.themeswitch);
         setTheme();
         if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
                         }
                         fixture = response.body();
                         for(Match M: fixture) {
+                            //TODO : refactor for dynamic solutions, delete logs before push master
                             Match match = new Match(M.getAway_name(),M.getHome_name(),"NULL","NULL","NULL","NULL",M.getWeek()+21);
                             matchViewModel.insert(M );
                             matchViewModel.insert(match);
