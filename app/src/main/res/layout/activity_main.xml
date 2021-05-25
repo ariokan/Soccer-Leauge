@@ -36,6 +36,13 @@
         android:background="?attr/bgc"
        >
 
+        <TextView
+            android:id="@+id/themehelper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="TextView" />
+
         <Button
             android:id="@+id/drawfixture"
             android:layout_width="match_parent"

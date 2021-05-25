@@ -7,6 +7,17 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "matches")
 public class Match {
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @PrimaryKey(autoGenerate = true)
+    private  int id;
     @ColumnInfo(name = "home_name")
     @NonNull
     private String home_name;
@@ -16,26 +27,19 @@ public class Match {
     @ColumnInfo(name = "score")
     @NonNull
     private String score;
-    @ColumnInfo(name = "date")
-    @NonNull
-    private String date;
     @ColumnInfo(name = "location")
     @NonNull
     private String location;
-    @ColumnInfo(name = "scheduled")
-    @NonNull
-    private String scheduled;
-    @PrimaryKey
+
     @NonNull
     private int week;
 
-    public Match(String home_name, String away_name, String score, String date, String location, String scheduled, int week) {
+    public Match( String home_name, String away_name, String location,String score, int week) {
+
         this.home_name = home_name;
         this.away_name = away_name;
         this.score = score;
-        this.date = date;
         this.location = location;
-        this.scheduled = scheduled;
         this.week = week;
     }
 
@@ -67,30 +71,12 @@ public class Match {
     }
 
     @NonNull
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(@NonNull String date) {
-        this.date = date;
-    }
-
-    @NonNull
     public String getLocation() {
         return location;
     }
 
     public void setLocation(@NonNull String location) {
         this.location = location;
-    }
-
-    @NonNull
-    public String getScheduled() {
-        return scheduled;
-    }
-
-    public void setScheduled(@NonNull String scheduled) {
-        this.scheduled = scheduled;
     }
 
     public int getWeek() {

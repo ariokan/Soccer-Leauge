@@ -72,6 +72,7 @@ public class Team {
     public void setTeamid(int teamid) {
         this.teamid = teamid;
     }
+
     public String getName() {
         return name;
     }

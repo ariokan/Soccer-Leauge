@@ -4,18 +4,16 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = Match.class,version = 1)
+@Database(entities ={Match.class},version = 1)
 public  abstract class FixtureDatabase extends RoomDatabase {
 
-    public abstract MatchDao matchDao();
-
     private static volatile FixtureDatabase fixtureInstance;
+    public abstract MatchDao matchDao();
 
     static FixtureDatabase getInstance(final Context context){
         if(fixtureInstance==null){
@@ -40,7 +38,12 @@ public  abstract class FixtureDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            matchDao.insert(new Match("mock","mock","mock","mock","mock","mock",1));
+            matchDao.insert(new Match("mock","mock","mock","mock",1));
+            matchDao.insert(new Match("mock1","mock1","mock1","mock1",1));
+            matchDao.insert(new Match("mock2","mock2","mock2","mock2",1));
+            matchDao.insert(new Match("mock3","mock3","mock3","mock3",1));
+            matchDao.insert(new Match("mock3","mock3","mock3","mock3",1));
+
             return null;
         }
     }

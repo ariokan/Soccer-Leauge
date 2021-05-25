@@ -13,8 +13,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
     public MatchAdapter matchAdapter;
     private MatchViewModel matchViewModel;
     private Switch themeSwitch;
+    public Match match;
 
 
     //TODO: refactor onCreate use simple functions
@@ -46,24 +47,37 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
 
 
        //TODO: find better way to solve it
+        TextView txt = (TextView) findViewById(R.id.themehelper);
         themeSwitch = (Switch) findViewById(R.id.themeswitch);
-        setTheme();
+
         if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
                 themeSwitch.setChecked(true);
         }
-            themeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked){
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                        reset();
-                    }else{
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                        reset();
-                    }
+            themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked){
+                    setTheme(R.style.DarkTheme);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    txt.setText("darkmode");
+                }else{
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    txt.setText("darkmode");
                 }
+                reset();
+
             });
 
+        RecyclerView fixture_RecyclerView = findViewById(R.id.recycerlview_fixture);
+        fixture_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        fixture_RecyclerView.setHasFixedSize(true);
+        final MatchAdapter adapter = new MatchAdapter();
+        fixture_RecyclerView.setAdapter(adapter);
+        matchViewModel = new ViewModelProvider(MainActivity.this, ViewModelProvider.AndroidViewModelFactory.getInstance(MainActivity.this.getApplication())).get(MatchViewModel.class);
+        matchViewModel.getAllMatches().observe(MainActivity.this, new Observer<List<Match>>() {
+            @Override
+            public void onChanged(List<Match> matches) {
+                adapter.setMatches(matches);
+            }
+        });
 
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -86,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
         drawFixturebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 Call<List<Match>> callMatch = api.getMatches();
                 assert fixture != null;
                 callMatch.enqueue(new Callback<List<Match>>() {
@@ -95,29 +111,18 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
                             return;
                         }
                         fixture = response.body();
+
                         for(Match M: fixture) {
                             //TODO : refactor for dynamic solutions, delete logs before push master
-                            Match match = new Match(M.getAway_name(),M.getHome_name(),"NULL","NULL","NULL","NULL",M.getWeek()+21);
-                            matchViewModel.insert(M );
-                            matchViewModel.insert(match);
+                            match = new Match( M.getAway_name(),M.getHome_name(),"NULL","NULL",M.getWeek()+21);
                             Log.d("1.half",String.valueOf(M.getWeek()));
                             Log.d("2.half",String.valueOf(match.getWeek()));
                             Log.d("2. half",String.valueOf(match.getHome_name()));
                             Log.d("1 half",String.valueOf(M.getAway_name()));
 
                         }
-                        matchAdapter = new MatchAdapter();
-                        fixture_RecyclerView.setAdapter(matchAdapter);
-                        matchViewModel = new ViewModelProvider(MainActivity.this, ViewModelProvider.AndroidViewModelFactory.getInstance(MainActivity.this.getApplication())).get(MatchViewModel.class);
 
-                        matchViewModel.getAllMatches().observe(MainActivity.this, new Observer<List<Match>>() {
-                            @Override
-                            public void onChanged(List<Match> matches) {
-                               int week=FixtureDatabase.getInstance(getApplicationContext()).matchDao().week(1);
-                                Log.d("week",String.valueOf(week));
-                                //matchAdapter.setMatches(matches);
-                            }
-                        });
+                        matchViewModel.insert(match);
                     }
 
                     @Override
@@ -159,14 +164,6 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
     public void onItemClick(int position) {
         Toast.makeText(getApplicationContext(), teamList.get(position).getName().toString(),Toast.LENGTH_SHORT).show();
     }
-    public void setTheme(){
-        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
-            setTheme(R.style.DarkTheme);
 
-        }
-        else{
-            setTheme(R.style.AppTheme);
-        }
-    }
 
 }

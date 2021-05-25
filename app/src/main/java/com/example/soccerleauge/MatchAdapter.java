@@ -8,10 +8,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchHolder> {
-    List<Match> matches;
+    List<Match> matches= new ArrayList();
     @NonNull
     @Override
     public MatchHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -27,8 +28,8 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchHolder>
         holder.home_name.setText(currentMatch.getHome_name());
         holder.away_name.setText(currentMatch.getAway_name());
         holder.location.setText(currentMatch.getLocation());
-        holder.location.setText(currentMatch.getScore());
-        holder.location.setText(String.valueOf(currentMatch.getWeek()));
+        holder.score.setText(currentMatch.getScore());
+        holder.week.setText(String.valueOf(currentMatch.getWeek()));
     }
 
     @Override

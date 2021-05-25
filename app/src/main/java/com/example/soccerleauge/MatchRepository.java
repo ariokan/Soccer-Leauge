@@ -16,12 +16,16 @@ public class MatchRepository {
         matchDao = database.matchDao();
         allMatches= matchDao.getAllMatches();
     }
+
     public void insert(Match match){
+
         new InsertMatchAsyncTask(matchDao).execute(match);
 }
-public LiveData<List<Match>> getAllMatches(){
+
+    public LiveData<List<Match>> getAllMatches(){
         return allMatches;
 }
+
 private static class InsertMatchAsyncTask extends AsyncTask<Match, Void,Void>{
         private MatchDao matchDao;
 
