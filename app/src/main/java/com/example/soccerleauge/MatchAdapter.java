@@ -36,7 +36,6 @@ public class MatchAdapter extends PagerAdapter {
 
         View itemView = LayoutInflater.from(mContext)
                 .inflate(R.layout.item_fixture, collection,false);;
-
         RecyclerView rv_fixture = itemView.findViewById(R.id.rv_fixture_item);
         FixtureAdapter weeklyMatches = new FixtureAdapter();
         weeklyMatches.setMatches(mMatches.get(position));
