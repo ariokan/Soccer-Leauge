@@ -1,47 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/bgc"
     tools:context=".MainActivity">
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="?attr/tc"
         android:layout_margin="10dp"
         android:layout_gravity="center"
         android:text="Super Lig"
         android:textStyle="bold"
-        android:textSize="20dp"></TextView>
+        android:textSize="20dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycerlview_team"
+        android:id="@+id/recyclerview_team"
         tools:listitem="@layout/item_team"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_margin="10dp"
-        android:background="?attr/bgc"
-        android:textColor="?attr/tc">
-
-
-    </androidx.recyclerview.widget.RecyclerView>
+        android:layout_margin="10dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:orientation="horizontal"
-        android:background="?attr/bgc"
        >
-
-        <TextView
-            android:id="@+id/themehelper"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="TextView" />
 
         <Button
             android:id="@+id/drawfixture"
@@ -61,12 +46,10 @@
             android:text="Theme Switch" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycerlview_fixture"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager_fixture"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
-        tools:listitem="@layout/item_fixture"
-        android:background="?attr/bgc"
-        android:textColor="?attr/tc"/>
+        tools:listitem="@layout/item_fixture" />
 </LinearLayout>

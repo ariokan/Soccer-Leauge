@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,8 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import androidx.viewpager.widget.ViewPager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,8 +32,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemClickListener {
 
-    private RecyclerView team_RecyclerView;
-    public RecyclerView fixture_RecyclerView;
     public  List<Team> teamList= new ArrayList<>();
     public List<Match> fixture;
     public TeamAdapter teamAdapter;
@@ -38,16 +40,11 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
     private Switch themeSwitch;
     public Match match;
 
-
-    //TODO: refactor onCreate use simple functions
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-       //TODO: find better way to solve it
-        TextView txt = (TextView) findViewById(R.id.themehelper);
         themeSwitch = (Switch) findViewById(R.id.themeswitch);
 
         if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES){
@@ -56,29 +53,23 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
             themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked){
                     setTheme(R.style.DarkTheme);
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    txt.setText("darkmode");
-                }else{
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    txt.setText("darkmode");
+                }else{
+                    setTheme(R.style.AppTheme);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
-                reset();
-
             });
 
-        RecyclerView fixture_RecyclerView = findViewById(R.id.recycerlview_fixture);
-        fixture_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        fixture_RecyclerView.setHasFixedSize(true);
-        final MatchAdapter adapter = new MatchAdapter();
-        fixture_RecyclerView.setAdapter(adapter);
+
         matchViewModel = new ViewModelProvider(MainActivity.this, ViewModelProvider.AndroidViewModelFactory.getInstance(MainActivity.this.getApplication())).get(MatchViewModel.class);
         matchViewModel.getAllMatches().observe(MainActivity.this, new Observer<List<Match>>() {
             @Override
             public void onChanged(List<Match> matches) {
-                adapter.setMatches(matches);
+                /*ViewPager viewPager_fixture = findViewById(R.id.viewpager_fixture);
+                final MatchAdapter adapter = new MatchAdapter(getApplicationContext(),fixture);
+                viewPager_fixture.setAdapter(adapter);*/
             }
         });
-
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
@@ -86,21 +77,19 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
                 .build();
         Api api =retrofit.create(Api.class);
 
-
-        team_RecyclerView = findViewById(R.id.recycerlview_team);
-        team_RecyclerView.setHasFixedSize(true);
+        RecyclerView team_RecyclerView = findViewById(R.id.recyclerview_team);
         team_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        team_RecyclerView.setHasFixedSize(true);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(team_RecyclerView.getContext(),
                 1);
         team_RecyclerView.addItemDecoration(dividerItemDecoration);
 
-
-
         Button drawFixturebtn = findViewById(R.id.drawfixture);
+        Map<Integer,Match> weekMatches;
+
         drawFixturebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
                 Call<List<Match>> callMatch = api.getMatches();
                 assert fixture != null;
@@ -111,18 +100,43 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
                             return;
                         }
                         fixture = response.body();
-
+                        List<Match> temp = new ArrayList<>();
                         for(Match M: fixture) {
-                            //TODO : refactor for dynamic solutions, delete logs before push master
                             match = new Match( M.getAway_name(),M.getHome_name(),"NULL","NULL",M.getWeek()+21);
-                            Log.d("1.half",String.valueOf(M.getWeek()));
-                            Log.d("2.half",String.valueOf(match.getWeek()));
-                            Log.d("2. half",String.valueOf(match.getHome_name()));
-                            Log.d("1 half",String.valueOf(M.getAway_name()));
-
+                            temp.add(match);
+                          //  matchViewModel.insert(match);
                         }
 
-                        matchViewModel.insert(match);
+                        for(int i=0;i<temp.size();i++)
+                        {
+                            fixture.add(temp.get(i));
+                        }
+
+                        int week = 1;
+                        List weekList = new ArrayList();
+                        List<List<Match>> mapWeek= new ArrayList<>();
+                        for(int i =0;i<fixture.size();i++) {
+
+                          if(week == fixture.get(i).getWeek())
+                          {
+                              weekList.add(fixture.get(i));
+
+                          }
+                          else
+                          {
+                              mapWeek.add(weekList);
+                              weekList = new ArrayList();
+                              weekList.add(fixture.get(i));
+                              week = fixture.get(i).getWeek();
+
+                          }
+                        }
+                        mapWeek.add(weekList);
+                        ViewPager viewPager_fixture = findViewById(R.id.viewpager_fixture);
+                        MatchAdapter adapter = new MatchAdapter(getApplicationContext(),mapWeek);
+                        viewPager_fixture.setAdapter(adapter);
+
+
                     }
 
                     @Override
@@ -139,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements TeamAdapter.ItemC
             @Override
             public void onResponse(Call<List<Team>> call, Response<List<Team>> response) {
                 if(!response.isSuccessful()) {
+                    ProgressDialog dialog = ProgressDialog.show(getApplicationContext(), "",
+                            "Loading. Please wait...", true);
                     return;
                 }
                  teamList =response.body();
