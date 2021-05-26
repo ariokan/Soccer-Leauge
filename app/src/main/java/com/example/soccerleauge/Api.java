@@ -7,7 +7,9 @@ import retrofit2.http.GET;
 
 public interface Api {
 
-    String BASE_URL = "https://api.mocki.io/v2/44e8a673/";
+    String BASE_URL = "https://api.mocki.io/v2/a70b75fb/";
     @GET("teams")
     Call<List<Team>> getTeams();
+    @GET("fixture")
+    Call<List<Match>> getMatches();
 }

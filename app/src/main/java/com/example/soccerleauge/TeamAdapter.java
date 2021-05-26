@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import retrofit2.Callback;
-
 
 public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder> {
 
@@ -30,7 +28,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
     @NonNull
     @Override
     public TeamViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_team, parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_team, parent,false);
         return  new TeamViewHolder(view, mOnClickListener);
     }
 
